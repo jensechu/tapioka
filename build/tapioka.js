@@ -3,44 +3,98 @@
   var init;
 
   init = function() {
-    var mainMenu, stage, title;
-    stage = new createjs.Stage('tapiokaCanvas');
+    var clearStage, gray, green, lightGreen, lightOrange, lightPink, lightYellow, mainMenu, measureIngredients, setStage, updateStage;
+    this.stage = new createjs.Stage('tapiokaCanvas');
+    gray = '#BBBBBB';
+    green = '#ABF7B1';
+    lightGreen = '#C4F5C8';
+    lightYellow = '#F1F7BE';
+    lightOrange = '#F7E4BE';
+    lightPink = '#F7D4BE';
     mainMenu = function() {
-      return title();
+      var continueButton, handleCircleClick, subtitle, title;
+      title = function() {
+        var titleColor, titleFont, titleOutline, titleOutlineColor, titleText, titleYPosition;
+        titleText = 'ｔａｐｉｏｋａ';
+        titleFont = '80px Arial';
+        titleColor = lightGreen;
+        titleOutlineColor = green;
+        titleYPosition = 50;
+        title = new createjs.Text();
+        title.text = titleText;
+        title.font = titleFont;
+        title.color = titleColor;
+        title.y = titleYPosition;
+        titleOutline = new createjs.Text();
+        titleOutline.text = titleText;
+        titleOutline.font = titleFont;
+        titleOutline.color = titleOutlineColor;
+        titleOutline.y = titleYPosition;
+        titleOutline.outline = 2;
+        return this.stage.addChild(title, titleOutline);
+      };
+      subtitle = function() {
+        subtitle = new createjs.Text();
+        subtitle.text = 'by jensen';
+        subtitle.font = '20px Arial';
+        subtitle.color = gray;
+        subtitle.x = 25;
+        subtitle.y = 150;
+        return this.stage.addChild(subtitle);
+      };
+      continueButton = function() {
+        var circle, circleText;
+        circleText = new createjs.Text();
+        circleText.text = 'start';
+        circleText.font = '20px Arial';
+        circleText.color = gray;
+        circleText.x = 380;
+        circleText.y = 390;
+        circle = new createjs.Shape();
+        circle.graphics.beginFill(lightPink).drawCircle(0, 0, 50);
+        circle.x = 400;
+        circle.y = 400;
+        this.stage.addChild(circle, circleText);
+        return circle.on('click', function(event) {
+          return handleCircleClick();
+        });
+      };
+      handleCircleClick = function(event) {
+        return setStage('measureIngredients');
+      };
+      title();
+      subtitle();
+      return continueButton();
     };
-    title = function() {
-      var subtitle, subtitleColor, subtitleFont, subtitleText, subtitleXPosition, subtitleYPosition, titleColor, titleFont, titleOutline, titleOutlineColor, titleText, titleYPosition;
-      titleText = 'ｔａｐｉｏｋａ';
-      titleFont = '80px Arial';
-      titleColor = '#C4F5C8';
-      titleOutlineColor = '#ABF7B1';
-      titleYPosition = 50;
-      subtitleText = 'by jensen';
-      subtitleFont = '20px Arial';
-      subtitleColor = '#BBB';
-      subtitleXPosition = 25;
-      subtitleYPosition = 150;
-      title = new createjs.Text();
-      title.text = titleText;
-      title.font = titleFont;
-      title.color = titleColor;
-      title.y = titleYPosition;
-      titleOutline = new createjs.Text();
-      titleOutline.text = titleText;
-      titleOutline.font = titleFont;
-      titleOutline.color = titleOutlineColor;
-      titleOutline.y = titleYPosition;
-      titleOutline.outline = 2;
-      subtitle = new createjs.Text();
-      subtitle.text = subtitleText;
-      subtitle.font = subtitleFont;
-      subtitle.color = subtitleColor;
-      subtitle.x = subtitleXPosition;
-      subtitle.y = subtitleYPosition;
-      return stage.addChild(title, titleOutline, subtitle);
+    measureIngredients = function() {
+      var levelTitle;
+      levelTitle = function() {
+        levelTitle = new createjs.Text();
+        levelTitle.text = 'measure ingredients';
+        levelTitle.color = green;
+        levelTitle.font = '50px Arial';
+        return this.stage.addChild(levelTitle);
+      };
+      return levelTitle();
     };
-    mainMenu();
-    return stage.update();
+    setStage = function(levelName) {
+      clearStage();
+      switch (levelName) {
+        case 'mainMenu':
+          mainMenu();
+          break;
+        case 'measureIngredients':
+          measureIngredients();
+      }
+      return updateStage();
+    };
+    clearStage = function() {
+      return this.stage.removeAllChildren();
+    };
+    updateStage = function() {
+      return this.stage.update();
+    };
+    return setStage('mainMenu');
   };
 
   init();
