@@ -4,6 +4,7 @@ init = () ->
   @stage = new createjs.Stage('tapiokaCanvas')
 
   # Color Pallette
+  white       = '#FFFFFF'
   gray        = '#BBBBBB'
   green       = '#ABF7B1'
   lightGreen  = '#C4F5C8'
@@ -13,7 +14,7 @@ init = () ->
 
   mainMenu = () ->
     title = () ->
-      titleText         = 'ｔａｐｉｏｋａ'
+      titleText         = 't a p i o k a'
       titleFont         = '80px Arial'
       titleColor        = lightGreen
       titleOutlineColor = green
@@ -39,7 +40,6 @@ init = () ->
       subtitle.text  = 'by jensen'
       subtitle.font  = '20px Arial'
       subtitle.color = gray
-      subtitle.x     = 25
       subtitle.y     = 150
 
       @stage.addChild(subtitle)
@@ -48,7 +48,7 @@ init = () ->
       circleText = new createjs.Text()
       circleText.text  = 'start'
       circleText.font  = '20px Arial'
-      circleText.color = gray
+      circleText.color = white
       circleText.x     = 380
       circleText.y     = 390
 
@@ -70,6 +70,16 @@ init = () ->
     continueButton()
 
   measureIngredients = () ->
+    cup   = new createjs.Shape()
+    water = new createjs.Shape()
+
+    cupX = 300
+    cupY = 200
+
+    waterX      = cupX + 85
+    waterY      = cupY - 100
+    waterHeight = 50
+
     levelTitle = () ->
       levelTitle = new createjs.Text()
       levelTitle.text  = 'measure ingredients'
@@ -78,7 +88,28 @@ init = () ->
 
       @stage.addChild(levelTitle)
 
+    measuringCup = () ->
+      cup.graphics.beginFill(lightPink).drawRect(cupX, cupY, 225, 250)
+
+      @stage.addChild(cup)
+
+    faucetWater = () ->
+      water.graphics.beginFill('#3394F7').drawRect(waterX, waterY, waterHeight, 50)
+
+      @stage.addChild(water)
+
+    pourWater = () ->
+      for pixels in waterHeight by 1
+        console.log(pixels);
+        #water.graphics.clear()
+
+        #waterHeight = waterHeight++
+        #water.graphics.beginFill('#3394F7').drawRect(waterX, waterY, waterHeight, 50)
+
     levelTitle()
+    measuringCup()
+    faucetWater()
+    pourWater()
 
   setStage = (levelName) ->
     clearStage()
