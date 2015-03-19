@@ -3,11 +3,13 @@
   var init;
 
   init = function() {
-    var clearStage, gray, green, lightGreen, lightOrange, lightPink, lightYellow, mainMenu, measureIngredients, setStage, updateStage, white;
+    var blue, clearStage, gray, green, lightGreen, lightOrange, lightPink, lightYellow, mainMenu, measureIngredients, red, setStage, updateStage, white;
     this.stage = new createjs.Stage('tapiokaCanvas');
+    red = '#F00';
     white = '#FFFFFF';
     gray = '#BBBBBB';
     green = '#ABF7B1';
+    blue = '#3394F7';
     lightGreen = '#C4F5C8';
     lightYellow = '#F1F7BE';
     lightOrange = '#F7E4BE';
@@ -67,14 +69,17 @@
       return continueButton();
     };
     measureIngredients = function() {
-      var cup, cupX, cupY, faucetWater, levelTitle, measuringCup, pourWater, runFaucet, water, waterHeight, waterX, waterY;
+      var cup, cupX, cupY, faucetWater, levelTitle, measuringCup, pooledWater, pooledWaterHeight, pooledWaterOffset, pourWater, runFaucet, showFailedText, water, waterHeight, waterInCup, waterX, waterY;
       cup = new createjs.Shape();
       water = new createjs.Shape();
+      pooledWater = new createjs.Shape();
       cupX = 300;
       cupY = 200;
       waterX = cupX + 85;
       waterY = cupY - 100;
       waterHeight = 50;
+      pooledWaterHeight = 0;
+      pooledWaterOffset = 250;
       levelTitle = function() {
         levelTitle = new createjs.Text();
         levelTitle.text = 'measure ingredients';
@@ -82,38 +87,58 @@
         levelTitle.font = '50px Arial';
         return this.stage.addChild(levelTitle);
       };
+      showFailedText = function() {
+        var failedText;
+        failedText = new createjs.Text();
+        failedText.text = 'too much! you fail.';
+        failedText.color = red;
+        failedText.font = '80px Arial';
+        failedText.x = 50;
+        failedText.y = 200;
+        return this.stage.addChild(failedText);
+      };
       measuringCup = function() {
         cup.graphics.beginFill(lightPink).drawRect(cupX, cupY, 225, 250);
         return this.stage.addChild(cup);
       };
       faucetWater = function() {
-        water.graphics.beginFill('#3394F7').drawRect(waterX, waterY, 50, waterHeight);
+        water.graphics.beginFill(blue).drawRect(waterX, waterY, 50, waterHeight);
         return this.stage.addChild(water);
       };
+      waterInCup = function() {
+        pooledWater.graphics.beginFill(blue).drawRect(cupX, cupY + pooledWaterOffset, 225, pooledWaterHeight);
+        return this.stage.addChild(pooledWater);
+      };
       runFaucet = function(timer) {
-        console.log('running', waterHeight);
-        if (waterHeight < 350) {
+        if (waterHeight < 340) {
           waterHeight++;
-          console.log(waterHeight);
           water.graphics.clear();
-          water.graphics.beginFill('#3394F7').drawRect(waterX, waterY, 50, waterHeight);
+          water.graphics.beginFill(blue).drawRect(waterX, waterY, 50, waterHeight);
           updateStage();
         }
-        if (waterHeight === 350) {
-          console.log('clearing');
-          return clearTimeout(timer);
+        if (waterHeight === 340) {
+          if (pooledWaterHeight > 250) {
+            clearTimeout(timer);
+            showFailedText();
+          }
+          pooledWaterHeight++;
+          pooledWaterOffset--;
+          pooledWater.graphics.clear();
+          pooledWater.graphics.beginFill(blue).drawRect(cupX + 10, cupY - 10 + pooledWaterOffset, 205, pooledWaterHeight);
+          return updateStage();
         }
       };
       pourWater = function() {
         var pourInterval;
         return pourInterval = setInterval((function() {
           return runFaucet(pourInterval);
-        }), 10);
+        }), 5);
       };
       levelTitle();
       measuringCup();
       faucetWater();
-      return pourWater();
+      pourWater();
+      return waterInCup();
     };
     setStage = function(levelName) {
       clearStage();

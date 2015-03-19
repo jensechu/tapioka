@@ -4,9 +4,11 @@ init = () ->
   @stage = new createjs.Stage('tapiokaCanvas')
 
   # Color Pallette
+  red         = '#F00'
   white       = '#FFFFFF'
   gray        = '#BBBBBB'
   green       = '#ABF7B1'
+  blue        = '#3394F7'
   lightGreen  = '#C4F5C8'
   lightYellow = '#F1F7BE'
   lightOrange = '#F7E4BE'
@@ -70,8 +72,9 @@ init = () ->
     continueButton()
 
   measureIngredients = () ->
-    cup   = new createjs.Shape()
-    water = new createjs.Shape()
+    cup         = new createjs.Shape()
+    water       = new createjs.Shape()
+    pooledWater = new createjs.Shape()
 
     cupX = 300
     cupY = 200
@@ -79,6 +82,9 @@ init = () ->
     waterX      = cupX + 85
     waterY      = cupY - 100
     waterHeight = 50
+
+    pooledWaterHeight = 0
+    pooledWaterOffset = 250
 
     levelTitle = () ->
       levelTitle = new createjs.Text()
@@ -88,39 +94,61 @@ init = () ->
 
       @stage.addChild(levelTitle)
 
+    showFailedText = () ->
+      failedText = new createjs.Text()
+      failedText.text  = 'too much! you fail.'
+      failedText.color = red
+      failedText.font  = '80px Arial'
+      failedText.x     = 50
+      failedText.y     = 200
+
+      @stage.addChild(failedText)
+
     measuringCup = () ->
       cup.graphics.beginFill(lightPink).drawRect(cupX, cupY, 225, 250)
 
       @stage.addChild(cup)
 
     faucetWater = () ->
-      water.graphics.beginFill('#3394F7').drawRect(waterX, waterY, 50, waterHeight)
+      water.graphics.beginFill(blue).drawRect(waterX, waterY, 50, waterHeight)
 
       @stage.addChild(water)
 
-    runFaucet = (timer) ->
-      console.log('running' , waterHeight)
+    waterInCup = () ->
+      pooledWater.graphics.beginFill(blue).drawRect(cupX, cupY + pooledWaterOffset, 225, pooledWaterHeight)
 
-      if waterHeight < 350
+      @stage.addChild(pooledWater)
+
+    runFaucet = (timer) ->
+      if waterHeight < 340
         waterHeight++
-        console.log(waterHeight)
 
         water.graphics.clear()
-        water.graphics.beginFill('#3394F7').drawRect(waterX, waterY, 50, waterHeight)
+        water.graphics.beginFill(blue).drawRect(waterX, waterY, 50, waterHeight)
 
         updateStage()
 
-      if waterHeight == 350
-        console.log('clearing')
-        clearTimeout(timer)
+      if waterHeight == 340
+        if pooledWaterHeight > 250
+          clearTimeout(timer)
+          showFailedText()
+
+        pooledWaterHeight++
+        pooledWaterOffset--
+
+        pooledWater.graphics.clear()
+        pooledWater.graphics.beginFill(blue).drawRect(cupX + 10, cupY - 10 + pooledWaterOffset, 205, pooledWaterHeight)
+
+        updateStage()
 
     pourWater = () ->
-      pourInterval = setInterval (-> runFaucet pourInterval), 10
+      pourInterval = setInterval (-> runFaucet pourInterval), 5
 
     levelTitle()
     measuringCup()
     faucetWater()
     pourWater()
+    waterInCup()
 
   setStage = (levelName) ->
     clearStage()
