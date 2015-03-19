@@ -67,7 +67,7 @@
       return continueButton();
     };
     measureIngredients = function() {
-      var cup, cupX, cupY, faucetWater, levelTitle, measuringCup, pourWater, water, waterHeight, waterX, waterY;
+      var cup, cupX, cupY, faucetWater, levelTitle, measuringCup, pourWater, runFaucet, water, waterHeight, waterX, waterY;
       cup = new createjs.Shape();
       water = new createjs.Shape();
       cupX = 300;
@@ -87,17 +87,28 @@
         return this.stage.addChild(cup);
       };
       faucetWater = function() {
-        water.graphics.beginFill('#3394F7').drawRect(waterX, waterY, waterHeight, 50);
+        water.graphics.beginFill('#3394F7').drawRect(waterX, waterY, 50, waterHeight);
         return this.stage.addChild(water);
       };
-      pourWater = function() {
-        var pixels, _i, _len, _results;
-        _results = [];
-        for (_i = 0, _len = waterHeight.length; _i < _len; _i += 1) {
-          pixels = waterHeight[_i];
-          _results.push(console.log(pixels));
+      runFaucet = function(timer) {
+        console.log('running', waterHeight);
+        if (waterHeight < 350) {
+          waterHeight++;
+          console.log(waterHeight);
+          water.graphics.clear();
+          water.graphics.beginFill('#3394F7').drawRect(waterX, waterY, 50, waterHeight);
+          updateStage();
         }
-        return _results;
+        if (waterHeight === 350) {
+          console.log('clearing');
+          return clearTimeout(timer);
+        }
+      };
+      pourWater = function() {
+        var pourInterval;
+        return pourInterval = setInterval((function() {
+          return runFaucet(pourInterval);
+        }), 10);
       };
       levelTitle();
       measuringCup();

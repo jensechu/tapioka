@@ -94,17 +94,28 @@ init = () ->
       @stage.addChild(cup)
 
     faucetWater = () ->
-      water.graphics.beginFill('#3394F7').drawRect(waterX, waterY, waterHeight, 50)
+      water.graphics.beginFill('#3394F7').drawRect(waterX, waterY, 50, waterHeight)
 
       @stage.addChild(water)
 
-    pourWater = () ->
-      for pixels in waterHeight by 1
-        console.log(pixels);
-        #water.graphics.clear()
+    runFaucet = (timer) ->
+      console.log('running' , waterHeight)
 
-        #waterHeight = waterHeight++
-        #water.graphics.beginFill('#3394F7').drawRect(waterX, waterY, waterHeight, 50)
+      if waterHeight < 350
+        waterHeight++
+        console.log(waterHeight)
+
+        water.graphics.clear()
+        water.graphics.beginFill('#3394F7').drawRect(waterX, waterY, 50, waterHeight)
+
+        updateStage()
+
+      if waterHeight == 350
+        console.log('clearing')
+        clearTimeout(timer)
+
+    pourWater = () ->
+      pourInterval = setInterval (-> runFaucet pourInterval), 10
 
     levelTitle()
     measuringCup()
