@@ -3,10 +3,11 @@
   var init;
 
   init = function() {
-    var blue, clearStage, gray, green, lightGreen, lightOrange, lightPink, lightYellow, mainMenu, measureIngredients, red, setStage, updateStage, white;
+    var black, blue, clearStage, gray, green, lightGreen, lightOrange, lightPink, lightYellow, mainMenu, measureIngredients, red, setStage, updateStage, white;
     this.stage = new createjs.Stage('tapiokaCanvas');
-    red = '#F00';
+    red = '#F00000';
     white = '#FFFFFF';
+    black = '#000000';
     gray = '#BBBBBB';
     green = '#ABF7B1';
     blue = '#3394F7';
@@ -69,10 +70,11 @@
       return continueButton();
     };
     measureIngredients = function() {
-      var cup, cupHeight, cupWidth, cupX, cupY, faucetWater, levelTitle, measuringCup, pooledWater, pooledWaterHeight, pooledWaterOffset, pooledWaterPadding, pooledWaterWidth, pooledWaterX, pooledWaterY, pourWater, runFaucet, showFailedText, water, waterHeight, waterInCup, waterWidth, waterX, waterY;
+      var cup, cupHeight, cupWidth, cupX, cupY, faucet, faucetWater, handleFaucetToggle, levelTitle, line, lineHeight, lineWidth, lineX, lineY, measuringCup, measuringLine, pooledWater, pooledWaterHeight, pooledWaterOffset, pooledWaterPadding, pooledWaterWidth, pooledWaterX, pooledWaterY, pourWater, runFaucet, showFailedText, water, waterHeight, waterInCup, waterIsOff, waterWidth, waterX, waterY;
       cup = new createjs.Shape();
       water = new createjs.Shape();
       pooledWater = new createjs.Shape();
+      line = new createjs.Shape();
       cupX = 300;
       cupY = 300;
       cupWidth = 225;
@@ -87,6 +89,11 @@
       pooledWaterOffset = 250;
       pooledWaterHeight = 0;
       pooledWaterWidth = cupWidth - (pooledWaterPadding * 2);
+      lineWidth = 50;
+      lineHeight = 10;
+      lineX = cupX + 5;
+      lineY = cupY + 65;
+      waterIsOff = true;
       levelTitle = function() {
         levelTitle = new createjs.Text();
         levelTitle.text = 'measure ingredients';
@@ -120,14 +127,60 @@
         pooledWater.graphics.beginFill(blue).drawRect(cupX, cupY + pooledWaterOffset, cupWidth, pooledWaterHeight);
         return this.stage.addChild(pooledWater);
       };
+      measuringLine = function() {
+        line.graphics.beginFill(black).drawRect(lineX, lineY, lineWidth, lineHeight);
+        return this.stage.addChild(line);
+      };
+      faucet = function() {
+        var circle, circleText;
+        circleText = new createjs.Text();
+        circleText.text = 'turn on \n water';
+        circleText.font = '20px Arial';
+        circleText.color = white;
+        circleText.x = 380;
+        circleText.y = 140;
+        circle = new createjs.Shape();
+        circle.graphics.beginFill(lightPink).drawCircle(0, 0, 50);
+        circle.x = 410;
+        circle.y = 160;
+        this.stage.addChild(circle, circleText);
+        return circle.on('click', function(event) {
+          return handleFaucetToggle();
+        });
+      };
+      handleFaucetToggle = function() {
+        if (waterIsOff) {
+          return pourWater();
+        } else {
+          return waterIsOff = true;
+        }
+      };
       runFaucet = function(timer) {
-        if (waterHeight < 340) {
+        var pooledWaterTop, waterBottom;
+        if (waterIsOff) {
+          waterBottom = waterY + waterHeight;
+          pooledWaterTop = (pooledWaterY + pooledWaterOffset) - pooledWaterHeight;
+          console.log('Bottom of water ' + waterBottom);
+          console.log('Pooled water top ' + pooledWaterTop);
+          if (waterBottom < pooledWaterTop) {
+            console.log('Water has not reached the bottom of the cup');
+          }
+          if (waterBottom > pooledWaterTop) {
+            console.log('Water is already in container');
+          }
+          waterHeight--;
+          waterY++;
+          water.graphics.clear();
+          water.graphics.beginFill(blue).drawRect(waterX, waterY, waterWidth, waterHeight);
+          updateStage();
+        }
+        if (!waterIsOff && waterHeight < 340) {
           waterHeight++;
           water.graphics.clear();
           water.graphics.beginFill(blue).drawRect(waterX, waterY, waterWidth, waterHeight);
           updateStage();
         }
-        if (waterHeight === 340) {
+        if (!waterIsOff && waterHeight === 340) {
           if (pooledWaterHeight > cupHeight) {
             clearTimeout(timer);
             showFailedText();
@@ -141,6 +194,7 @@
       };
       pourWater = function() {
         var pourInterval;
+        waterIsOff = false;
         return pourInterval = setInterval((function() {
           return runFaucet(pourInterval);
         }), 5);
@@ -148,8 +202,9 @@
       levelTitle();
       measuringCup();
       faucetWater();
-      pourWater();
-      return waterInCup();
+      waterInCup();
+      measuringLine();
+      return faucet();
     };
     setStage = function(levelName) {
       clearStage();
