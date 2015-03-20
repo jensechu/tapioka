@@ -76,21 +76,29 @@ init = () ->
     water       = new createjs.Shape()
     pooledWater = new createjs.Shape()
 
-    cupX = 300
-    cupY = 200
+    cupX      = 300
+    cupY      = 300
+    cupWidth  = 225
+    cupHeight = 250
 
     waterX      = cupX + 85
     waterY      = cupY - 100
-    waterHeight = 50
+    waterHeight = 0
+    waterWidth  = 50
 
-    pooledWaterHeight = 0
-    pooledWaterOffset = 250
+    pooledWaterPadding = 10
+    pooledWaterX       = cupX + pooledWaterPadding
+    pooledWaterY       = cupY - pooledWaterPadding
+    pooledWaterOffset  = 250
+    pooledWaterHeight  = 0
+    pooledWaterWidth   = cupWidth - (pooledWaterPadding * 2)
 
     levelTitle = () ->
       levelTitle = new createjs.Text()
       levelTitle.text  = 'measure ingredients'
       levelTitle.color = green
       levelTitle.font  = '50px Arial'
+      levelTitle.y     = 50
 
       @stage.addChild(levelTitle)
 
@@ -100,22 +108,36 @@ init = () ->
       failedText.color = red
       failedText.font  = '80px Arial'
       failedText.x     = 50
-      failedText.y     = 200
+      failedText.y     = 300
 
       @stage.addChild(failedText)
 
+      resetTimeout = setTimeout (-> setStage 'mainMenu'), 5000
+
     measuringCup = () ->
-      cup.graphics.beginFill(lightPink).drawRect(cupX, cupY, 225, 250)
+      cup.graphics.beginFill(lightPink).drawRect(
+        cupX,
+        cupY,
+        cupWidth,
+        cupHeight)
 
       @stage.addChild(cup)
 
     faucetWater = () ->
-      water.graphics.beginFill(blue).drawRect(waterX, waterY, 50, waterHeight)
+      water.graphics.beginFill(blue).drawRect(
+        waterX,
+        waterY,
+        waterWidth,
+        waterHeight)
 
       @stage.addChild(water)
 
     waterInCup = () ->
-      pooledWater.graphics.beginFill(blue).drawRect(cupX, cupY + pooledWaterOffset, 225, pooledWaterHeight)
+      pooledWater.graphics.beginFill(blue).drawRect(
+        cupX,
+        cupY + pooledWaterOffset,
+        cupWidth,
+        pooledWaterHeight)
 
       @stage.addChild(pooledWater)
 
@@ -124,12 +146,16 @@ init = () ->
         waterHeight++
 
         water.graphics.clear()
-        water.graphics.beginFill(blue).drawRect(waterX, waterY, 50, waterHeight)
+        water.graphics.beginFill(blue).drawRect(
+          waterX,
+          waterY,
+          waterWidth,
+          waterHeight)
 
         updateStage()
 
       if waterHeight == 340
-        if pooledWaterHeight > 250
+        if pooledWaterHeight > cupHeight
           clearTimeout(timer)
           showFailedText()
 
@@ -137,7 +163,11 @@ init = () ->
         pooledWaterOffset--
 
         pooledWater.graphics.clear()
-        pooledWater.graphics.beginFill(blue).drawRect(cupX + 10, cupY - 10 + pooledWaterOffset, 205, pooledWaterHeight)
+        pooledWater.graphics.beginFill(blue).drawRect(
+          pooledWaterX,
+          pooledWaterY + pooledWaterOffset,
+          pooledWaterWidth,
+          pooledWaterHeight)
 
         updateStage()
 
